@@ -1,10 +1,10 @@
 use bevy::{
-    core::FixedTimestep,
     ecs::schedule::SystemSet,
     prelude::*,
     render::{camera::Camera, render_graph::base::camera::CAMERA_3D},
 };
 use rand::Rng;
+use wasm_bindgen::prelude::*;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
 enum GameState {
@@ -12,25 +12,36 @@ enum GameState {
     GameOver,
 }
 
+#[wasm_bindgen]
+pub fn run() {
+    let mut app = App::build();
+    app.add_plugins(DefaultPlugins);
+
+    // when building for Web, use WebGL2 rendering
+    #[cfg(target_arch = "wasm32")]
+    app.add_plugin(bevy_webgl2::WebGL2Plugin);
+
+    app.insert_resource(Msaa { samples: 4 });
+    app.init_resource::<Game>();
+    app.add_state(GameState::Playing);
+    app.add_startup_system(setup_cameras.system());
+    app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup.system()));
+    app.add_system_set(
+        SystemSet::on_update(GameState::Playing)
+            .with_system(move_player.system())
+            .with_system(focus_camera.system()),
+    );
+    app.add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown.system()));
+    app.add_system_set(
+        SystemSet::on_update(GameState::GameOver).with_system(gameover_keyboard.system()),
+    );
+    app.add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown.system()));
+
+    app.run();
+}
+
 fn main() {
-    App::build()
-        .insert_resource(Msaa { samples: 4 })
-        .init_resource::<Game>()
-        .add_plugins(DefaultPlugins)
-        .add_state(GameState::Playing)
-        .add_startup_system(setup_cameras.system())
-        .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup.system()))
-        .add_system_set(
-            SystemSet::on_update(GameState::Playing)
-                .with_system(move_player.system())
-                .with_system(focus_camera.system())
-        )
-        .add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown.system()))
-        .add_system_set(
-            SystemSet::on_update(GameState::GameOver).with_system(gameover_keyboard.system()),
-        )
-        .add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown.system()))
-        .run();
+    self::run();
 }
 
 struct Cell {
