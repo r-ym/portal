@@ -40,10 +40,6 @@ pub fn run() {
     app.run();
 }
 
-fn main() {
-    self::run();
-}
-
 struct Cell {
     height: f32,
 }
