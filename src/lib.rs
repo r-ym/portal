@@ -15,13 +15,10 @@ enum GameState {
 #[wasm_bindgen]
 pub fn run() {
     let mut app = App::build();
+    app.insert_resource(Msaa { samples: 4 });
     app.add_plugins(DefaultPlugins);
-
-    // when building for Web, use WebGL2 rendering
     #[cfg(target_arch = "wasm32")]
     app.add_plugin(bevy_webgl2::WebGL2Plugin);
-
-    app.insert_resource(Msaa { samples: 4 });
     app.init_resource::<Game>();
     app.add_state(GameState::Playing);
     app.add_startup_system(setup_cameras.system());
