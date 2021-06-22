@@ -48,19 +48,19 @@ struct Player {
     j: usize,
 }
 
-#[derive(Default)]
-struct Bonus {
-    entity: Option<Entity>,
-    i: usize,
-    j: usize,
-    handle: Handle<Scene>,
-}
+// #[derive(Default)]
+// struct Bonus {
+//     entity: Option<Entity>,
+//     i: usize,
+//     j: usize,
+//     handle: Handle<Scene>,
+// }
 
 #[derive(Default)]
 struct Game {
     board: Vec<Vec<Cell>>,
     player: Player,
-    bonus: Bonus,
+    // bonus: Bonus,
     score: i32,
     camera_should_focus: Vec3,
     camera_is_focus: Vec3,
@@ -144,9 +144,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut game: ResMu
             .id(),
     );
 
-    // load the scene for the cake
-    game.bonus.handle = asset_server.load("models/AlienCake/cakeBirthday.glb#Scene0");
-
 }
 
 // remove all entities that are not a camera
@@ -158,7 +155,6 @@ fn teardown(mut commands: Commands, entities: Query<Entity, Without<Camera>>) {
 
 // control the game character
 fn move_player(
-    mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     mut game: ResMut<Game>,
     mut transforms: Query<&mut Transform>,
@@ -216,7 +212,6 @@ fn focus_camera(
     mut transforms: QuerySet<(Query<(&mut Transform, &Camera)>, Query<&Transform>)>,
 ) {
     const SPEED: f32 = 2.0;
-    // if there is both a player and a bonus, target the mid-point of them
     if let Some(player_entity) = game.player.entity {
         if let Ok(player_transform) = transforms.q1().get(player_entity) {
             game.camera_should_focus = player_transform.translation;
