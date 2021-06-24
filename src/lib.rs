@@ -4,6 +4,7 @@ use bevy::{
     render::{camera::Camera, render_graph::base::camera::CAMERA_3D},
 };
 use wasm_bindgen::prelude::*;
+// use rand::Rng;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
 enum GameState {
@@ -14,7 +15,7 @@ enum GameState {
 #[wasm_bindgen]
 pub fn run() {
     let mut app = App::build();
-    app.insert_resource(Msaa { samples: 4 });
+    app.insert_resource(Msaa { samples: 1 });
     app.add_plugins(DefaultPlugins);
     #[cfg(target_arch = "wasm32")]
     app.add_plugin(bevy_webgl2::WebGL2Plugin);
@@ -95,14 +96,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut game: ResMu
     game.score = 0;
     game.player.i = BOARD_SIZE_I / 2;
     game.player.j = BOARD_SIZE_J / 2;
-
     commands.spawn_bundle(LightBundle {
         transform: Transform::from_xyz(4.0, 5.0, 4.0),
         ..Default::default()
     });
-
-    // spawn the game board
-    let cell_scene = asset_server.load("models/AlienCake/tile.glb#Scene0");
+    let gate = asset_server.load("models/game/gate.glb#Scene0");
+    let cell_scene = asset_server.load("models/game/tile.glb#Scene0");
+    // let grass = asset_server.load("models/AlienCake/tile.glb#Scene0");
     game.board = (0..BOARD_SIZE_J)
         .map(|j| {
             (0..BOARD_SIZE_I)
@@ -115,12 +115,38 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut game: ResMu
                         ))
                         .with_children(|cell| {
                             cell.spawn_scene(cell_scene.clone());
-                        });
+                        })
+                    ;
+                    // commands
+                    //     .spawn_bundle((
+                    //         Transform::from_xyz(i as f32, height - 0.2, j as f32),
+                    //         GlobalTransform::identity(),
+                    //     ))
+                    //     .with_children(|cell| {
+                    //         cell.spawn_scene(cell_scene.clone());
+                    //     })
+                    // ;
                     Cell { height }
+                
                 })
                 .collect()
         })
         .collect();
+        commands.spawn_bundle((
+                            Transform::from_xyz(1.5, 0.8, -0.4),
+                            GlobalTransform::identity(),
+                        ))
+                        .with_children(|g| {
+                            g.spawn_scene(gate.clone());
+                        });
+        commands.spawn_bundle((
+                            Transform::from_xyz(1.5, 0.8, 7.6),
+                            GlobalTransform::identity(),
+                        ))
+                        .with_children(|g| {
+                            g.spawn_scene(gate.clone());
+                        });
+
 
     // spawn the game character
     game.player.entity = Some(
@@ -139,7 +165,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut game: ResMu
                 GlobalTransform::identity(),
             ))
             .with_children(|cell| {
-                cell.spawn_scene(asset_server.load("models/AlienCake/tot.glb#Scene0"));
+                cell.spawn_scene(asset_server.load("models/game/tot.glb#Scene0"));
             })
             .id(),
     );
