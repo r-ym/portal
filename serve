@@ -1,0 +1,6 @@
+#!/bin/zsh
+wasm-pack build --target web --release;
+cp -fr assets ~/Github/r-ym.github.io/www;
+cd pkg;
+mv -f portal.js ~/Github/r-ym.github.io/www;
+mv -f portal_bg.wasm ~/Github/r-ym.github.io/www;

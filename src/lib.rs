@@ -48,14 +48,6 @@ struct Player {
     j: usize,
 }
 
-// #[derive(Default)]
-// struct Bonus {
-//     entity: Option<Entity>,
-//     i: usize,
-//     j: usize,
-//     handle: Handle<Scene>,
-// }
-
 #[derive(Default)]
 struct Game {
     board: Vec<Vec<Cell>>,
@@ -117,15 +109,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut game: ResMu
                             cell.spawn_scene(cell_scene.clone());
                         })
                     ;
-                    // commands
-                    //     .spawn_bundle((
-                    //         Transform::from_xyz(i as f32, height - 0.2, j as f32),
-                    //         GlobalTransform::identity(),
-                    //     ))
-                    //     .with_children(|cell| {
-                    //         cell.spawn_scene(cell_scene.clone());
-                    //     })
-                    // ;
                     Cell { height }
                 
                 })
@@ -165,7 +148,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut game: ResMu
                 GlobalTransform::identity(),
             ))
             .with_children(|cell| {
-                cell.spawn_scene(asset_server.load("models/game/tot.glb#Scene0"));
+                cell.spawn_scene(asset_server.load("models/game/tit.glb#Scene0"));
             })
             .id(),
     );
